@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Conceptive_AdvanceSearch::css/main.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <referenceBlock name="header.container">
+            <block class="Conceptive\AdvanceSearch\Block\Index" name="cc_search.header.link" after="-" template="Conceptive_AdvanceSearch::search_show.phtml"/>
+        </referenceBlock>
+
+        <referenceBlock name="footer">
+            <block class="Conceptive\AdvanceSearch\Block\Index" name="cc_search.footer.link" after="-" template="Conceptive_AdvanceSearch::search_show.phtml"/>
+        </referenceBlock>
+
+        <referenceContainer name="content">
+            <block class="Conceptive\AdvanceSearch\Block\Index" name="ccsearch-form-popup" template="Conceptive_AdvanceSearch::form.phtml" ifconfig="conceptive/general/popup" />
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,15 @@
+<?php
+$helper         = $this->helper('Conceptive\AdvanceSearch\Helper\Data');
+$popupEnabled   = $helper->getGeneralConfig('popup');
+$popupEnabClass = ($popupEnabled == 1) ? "popup-modal" : null;
+$linkLocation   = $helper->getLinkLocation();
+$link_label     = $helper->getGeneralConfig('link_label');
+?>
+
+<?php if ($linkLocation == 'header' && $block->getNameInLayout() == 'cc_search.header.link') : ?>
+    <!-- Display link in the header -->
+    <li class="ccsearch <?= /* @noEscape */ $popupEnabClass ?>"><a href="<?= $block->getUrl('productfinder') ?>"><?= /* @noEscape */ $link_label ?></a></li>
+<?php elseif ($linkLocation == 'footer' && $block->getNameInLayout() == 'cc_search.footer.link') : ?>
+    <!-- Display link in the footer -->
+    <li class="ccsearch <?= /* @noEscape */ $popupEnabClass ?>"><a href="<?= $block->getUrl('productfinder') ?>"><?= /* @noEscape */ $link_label ?></a></li>
+<?php endif; ?>

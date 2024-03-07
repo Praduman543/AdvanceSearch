@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="conceptive" translate="label" sortOrder="10">
+            <label>Conceptive Extension's</label>
+        </tab>
+        <section id="conceptive" translate="label" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>ADVANCE SEARCH</label>
+            <tab>conceptive</tab>
+            <resource>Conceptive_AdvanceSearch::configuration</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General Configuration</label>
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+
+                <field id="popup" translate="label comment" sortOrder="20" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Display Type</label>
+                    <source_model>Conceptive\AdvanceSearch\Model\Config\Source\Popup</source_model>
+                </field>
+                
+                <field id="display_link_location" translate="label comment" sortOrder="30" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Link In</label>
+                    <source_model>Conceptive\AdvanceSearch\Model\Config\Source\Show</source_model>
+                </field>
+
+                 <field id="link_label" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Link Label</label>
+                </field>
+
+                <field id="allowattributesinview" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Attributes to show in advance search page</label>
+                    <source_model>Conceptive\AdvanceSearch\Model\Config\Source\Attribute</source_model>
+                    <comment>Selected attribute will display in configure product detail page.</comment>
+                </field>
+
+                <field id="bg_color" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Background Color</label>
+                    <frontend_model>Conceptive\AdvanceSearch\Model\Config\Source\ColorPicker</frontend_model>
+                    <depends>
+                        <field id="animated">1</field>
+                    </depends>
+                    <comment> Select Background color for Add to cart and Submit buttons.</comment>
+                </field>
+
+                <field id="hv_color" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Hover Color</label>
+                    <frontend_model>Conceptive\AdvanceSearch\Model\Config\Source\ColorPicker</frontend_model>
+                    <depends>
+                        <field id="animated">1</field>
+                    </depends>
+                    <comment> Select Hover color for Add to cart and Submit buttons.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,144 @@
+<?php
+$helper = $this->helper('Conceptive\AdvanceSearch\Helper\Data');
+$bg_color = $helper->getGeneralConfig('bg_color');
+$hv_color = $helper->getGeneralConfig('hv_color');
+$popupEnable = $helper->getGeneralConfig('popup');
+$popupEnableClass = ($popupEnable) ? 'popup-modal' : '';
+?>
+<style>
+    .ccsearch-container .action.primary {
+        background-color: <?php echo "#" . $bg_color; ?>;
+        border: 1px solid <?php echo "#" . $bg_color; ?>;
+    }
+
+    .ccsearch-container .action.primary:hover {
+        background-color: <?php echo "#" . $hv_color; ?>;
+        border: 1px solid <?php echo "#" . $hv_color; ?>;
+    }
+</style>
+<div class="ccsearch-container ccsearch-form <?php /* @noEscape */ echo $popupEnableClass ?>"
+<?= ($popupEnable)? 'style="display:none"' : '' ?> >
+    <form action="" method="POST">
+        <div class="ajax-advanced-search">
+            <h2 class="title"><?php echo __('Advance Product Search'); ?></h2>
+            <div class="ajax-advanced-search-main">
+                <div class="attributes container">
+                    <?php
+
+                    $attributes = $block->getDisplayAttributes();
+                    $attributesColl = explode(',', $attributes);
+
+                    foreach ($attributesColl as $attribute) {
+                        $optionLabel = $block->getAttrLabel($attribute);
+                        $attrOptions = $block->getAttrOptIdByLabel($attribute);
+                        if (count($attrOptions) > 1) { ?>
+                            <label class='attribute label'><?php echo __("Select %1", $optionLabel) ?></label>
+                        <?php
+                        } ?>
+                        <div class='attribute-container'>
+                            <ol class="items attribute-<?php /* @noEscape */ echo $attribute ?>">
+                                <?php
+                                foreach ($attrOptions as $keys => $attrOption) {
+                                    if ($keys > 0) {
+                                        $value = $attrOption["value"];
+                                        $label = $attrOption["label"]; ?>
+                                        <li class="item">
+                                            <input type='checkbox' value="<?= /* @noEscape */ $value ?>" class="optionId" name="ccsearch[<?= /* @noEscape */ $attribute ?>][]" id="ccsearch[<?= /* @noEscape */ $attribute ?>][]-<?= /* @noEscape */ $value ?>">
+                                            <label for="ccsearch[<?= /* @noEscape */ $attribute ?>][]-<?= /* @noEscape */ $value ?>"><span class="label"><?= /* @noEscape */ $label ?></span></label>
+                                        </li>
+                                <?php
+                                    }
+                                }
+                                ?>
+                            </ol>
+                        </div>
+                    <?php
+                    }  ?>
+                    <div class="search-price">
+                        <label class="price label" for="price"><?php echo __('Price') ?></label>
+                        <div class="input-range">
+                            <input name="price_from" id="price" title="Price" class="input-price" type="number" pattern="\d*" maxlength="128">
+                            <span class="separator">-</span>
+                            <input name="price_to" id="price_to" title="Price" class="input-price" type="number" pattern="\d*" maxlength="128">
+                            <small>(<?php echo $block->getCurrentCurrencyCode();  ?>)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button type="submit" class="action search primary" title="Search" id="button" name="submit" value="Search">
+                    <span><?php echo /* @noEscape */  __('Search') ?></span>
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="result" style="display:none">
+    </div>
+</div>
+
+
+<script>
+    require(['jquery', 'Magento_Ui/js/modal/modal', 'jquery/ui'], function($, modal) {
+        $(document).ready(function() {
+            $(".ccsearch-container .result").hide();
+            $('#button').click(function() {
+                $(".ccsearch-form > form").hide();
+
+                var attribute = [];
+                $.each($("input[type=hidden][name=attributeId]"), function() {
+                    attribute.push($(this).val());
+                });
+
+                var favorite = [];
+                $.each($("input[type=checkbox][name=optionId]:checked"), function() {
+                    favorite.push($(this).val());
+                });
+
+                var priceFrom = $('#price').val();
+                var priceTo = $('#price_to').val();
+
+                console.log($('.ccsearch-form > form').serialize());
+
+                var url = "<?php echo $block->getUrl('productfinder/search/result') ?>";
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: $('.ccsearch-form > form').serialize(),
+                    showLoader: true,
+                    cache: false,
+                    success: function(response) {
+                        $(".ccsearch-container .result").show();
+                        $(".ccsearch-container .result").html(response.output);
+                    }
+                });
+                return false;
+            });
+
+            // popup code
+            var popuContainer = $('.ccsearch-container.popup-modal')
+            if (typeof(popuContainer) != 'undefined' && popuContainer != false && popuContainer.length > 0) {
+                var options = {
+                    type: 'popup',
+                    responsive: true,
+                    innerScroll: true,
+                    title: 'Advance Product Search',
+                    buttons: [{
+                        text: $.mage.__('Close'),
+                        class: '',
+                        click: function() {
+                            this.closeModal();
+                        }
+                    }]
+                };
+                var popup = modal(options, $('.ccsearch-form.popup-modal'));
+
+                $(".ccsearch.popup-modal").on('click', function(event) {
+                    $(".ccsearch-form.popup-modal").modal("openModal");
+                    event.preventDefault();
+                });
+            }
+        });
+    });
+</script>
