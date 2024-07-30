@@ -1,19 +1,23 @@
 <?php
+
 namespace Conceptive\AdvanceSearch\Controller\Index;
 
-class Index extends \Magento\Framework\App\Action\Action
-{
-	protected $_pageFactory;
-	public function __construct(
-		\Magento\Framework\App\Action\Context $context,
-		\Magento\Framework\View\Result\PageFactory $pageFactory)
-	{
-		$this->_pageFactory = $pageFactory;
-		return parent::__construct($context);
-	}
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\App\Action\Context;
 
-	public function execute()
-	{
-		return $this->_pageFactory->create();
-	}
+class Index implements HttpGetActionInterface
+{
+    protected $resultFactory;
+
+    public function __construct(
+        Context $context
+    ) {
+        $this->resultFactory = $context->getResultFactory();
+    }
+
+    public function execute()
+    {
+        return $this->resultFactory->create(ResultFactory::TYPE_PAGE);
+    }
 }

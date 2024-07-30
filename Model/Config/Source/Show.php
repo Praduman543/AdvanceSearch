@@ -12,8 +12,8 @@ class Show implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => 'header', 'label' => __('Footer')],
-            ['value' => 'footer', 'label' => __('Header')]
+            ['value' => 'header', 'label' => __('Header')],
+            ['value' => 'footer', 'label' => __('Footer')]
         ];
     }
 }

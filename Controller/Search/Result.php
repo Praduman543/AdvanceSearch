@@ -2,65 +2,54 @@
 
 namespace Conceptive\AdvanceSearch\Controller\Search;
 
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\Result\JsonFactory;
 
-class Result extends \Magento\Framework\App\Action\Action
+class Result implements HttpPostActionInterface
 {
-
-    /**
-     * @var Magento\Framework\View\Result\PageFactory
-     */
     protected $resultPageFactory;
-
     protected $resultJsonFactory;
+    protected $url;
+    protected $request;
+    protected $redirect;
 
-    /**
-     * @param Context     $context
-     * @param PageFactory $resultPageFactory
-     */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
         JsonFactory $resultJsonFactory
     ) {
-
         $this->resultPageFactory = $resultPageFactory;
         $this->resultJsonFactory = $resultJsonFactory;
-        return parent::__construct($context);
+        $this->redirect = $context->getRedirect();
+        $this->url = $context->getUrl();
+        $this->request = $context->getRequest();
     }
-
 
     public function execute()
     {
-        // echo '<pre>';
-        // print_r($this->getRequest()->getParams());exit;
-        $params = $this->getRequest()->getParams();
-        $attribute = (isset($params['ccsearch']))? $params['ccsearch'] : null;
-        $priceFrom = (!empty($params['price_from']))? $params['price_from'] : null;
-        $priceTo = (!empty($params['price_to']))? $params['price_to'] : null;
+        $params = $this->request->getParams();
+        $attribute = $params['ccsearch'] ?? null;
+        $priceFrom = $params['price_from'] ?? null;
+        $priceTo = $params['price_to'] ?? null;
 
-        $result = $this->resultJsonFactory->create();
+        $redirectUrl = $this->redirect->getRedirectUrl();
+
         $resultPage = $this->resultPageFactory->create();
 
+        $resultContent = $resultPage->getLayout()
+            ->createBlock('Conceptive\AdvanceSearch\Block\ListProduct')
+            ->setTemplate('Conceptive_AdvanceSearch::result.phtml')
+            ->setData('attribute', $attribute)
+            ->setData('price_from', $priceFrom)
+            ->setData('price_to', $priceTo)
+            ->setData('redirect_url', $redirectUrl)
+            ->toHtml();
 
-        $block = $resultPage->getLayout()
-                ->createBlock('Conceptive\AdvanceSearch\Block\ListProduct')
-                ->setTemplate('Conceptive_AdvanceSearch::result.phtml')
-                ->setData('attribute',$attribute)
-                ->setData('price_from',$priceFrom)
-                ->setData('price_to',$priceTo)
-                ->toHtml();
+        $result = $this->resultJsonFactory->create();
+        $result->setData(['output' => $resultContent]);
 
-        $result->setData(['output' => $block]);
-        // if (empty($numone) && empty($attributeId) && empty($priceFrom) && empty($priceTo)) {
-        //     $resultRedirect = $this->resultRedirectFactory->create();
-        //     $resultRedirect->setPath('checkout/cart/index');
-        //     return $resultRedirect;
-        // } else {
-        //     return $result;
-        // }
         return $result;
     }
 }

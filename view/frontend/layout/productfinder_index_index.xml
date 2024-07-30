@@ -22,8 +22,8 @@
                 </argument>
             </action>
         </referenceBlock>
+        <referenceContainer name="content">
+            <block class="Conceptive\AdvanceSearch\Block\Index" name="cc-search-form" template="Conceptive_AdvanceSearch::form.phtml" />
+        </referenceContainer>
     </body>
-    <referenceContainer name="content">
-        <block class="Conceptive\AdvanceSearch\Block\Index" name="cc-search-form" template="Conceptive_AdvanceSearch::form.phtml" />
-    </referenceContainer>
 </page>

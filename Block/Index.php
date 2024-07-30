@@ -8,19 +8,16 @@ class Index extends \Magento\Framework\View\Element\Template
 
     protected $helper;
     protected $productFactory;
-    protected $_storeManager;
 
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         Data $helper,
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         array $data = []
     )
     {        
         $this->helper = $helper;
         $this->productFactory = $productFactory;
-        $this->_storeManager = $storeManager;
         parent::__construct($context, $data);
     }
     

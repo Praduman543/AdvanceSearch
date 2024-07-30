@@ -48,22 +48,34 @@ class ListProduct extends \Magento\Catalog\Block\Product\AbstractProduct
      * @return \Magento\Catalog\Model\Category
      */
 
-    public function getProductCollection($attributeId = null)
+    public function getProductCollection()
     {
+        $conditions = [];
         $attributeColl = $this->getAttribute();
         $priceFrom = $this->getPriceFrom();
         $priceTo = $this->getPriceTo();
 
+        if (empty($attributeColl) && empty($priceFrom) && empty($priceTo)) {
+            // Return an empty collection if no conditions are present
+            return $this->_productCollectionFactory->create()->addAttributeToFilter('entity_id', ['in' => []]);
+        }
+
         $collection = $this->_productCollectionFactory->create();
         $collection->addAttributeToSelect('*');
-        if (is_array($attributeColl)) {
+        $collection->addAttributeToFilter('visibility', ['neq' => \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE]);
+        
+        if (is_array($attributeColl) && !empty($attributeColl)) {
             foreach ($attributeColl as $attrCode => $attrOptions) {
-                $collection->addAttributeToFilter($attrCode, ['in' => $attrOptions]);
+                $conditions[] = ['attribute' => $attrCode, 'in' => $attrOptions];
             }
+            $collection->addAttributeToFilter($conditions);
         }
-        $collection->addFieldToFilter('price', array('from' => $priceFrom, 'to' => $priceTo));
+        
+        if (!empty($priceFrom) || !empty($priceTo)) {
+            $collection->addFieldToFilter('price', ['from' => $priceFrom, 'to' => $priceTo]);
+        }
+
         $collection->addAttributeToSort('price', 'ASC');
-        $collection->setPageSize(50);
         return $collection;
     }
 

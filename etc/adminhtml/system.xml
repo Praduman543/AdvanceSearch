@@ -20,13 +20,13 @@
                     <label>Display Type</label>
                     <source_model>Conceptive\AdvanceSearch\Model\Config\Source\Popup</source_model>
                 </field>
-                
+
                 <field id="display_link_location" translate="label comment" sortOrder="30" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Link In</label>
                     <source_model>Conceptive\AdvanceSearch\Model\Config\Source\Show</source_model>
                 </field>
 
-                 <field id="link_label" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="link_label" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Link Label</label>
                 </field>
 

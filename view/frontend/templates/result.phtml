@@ -3,6 +3,7 @@
 use Magento\Framework\App\Action\Action;
 
 $productCollection = $block->getProductCollection();
+$redirectUrl   = $this->getRedirectUrl();
 $attributeColl = $this->getAttribute();
 $priceFrom = $this->getPriceFrom();
 $priceTo = $this->getPriceTo();
@@ -17,36 +18,34 @@ if (!empty($priceFrom) && !empty($priceTo)) {
         $priceSummary =  __('up to %1', $priceTo);
     }
 }
+
+$itemCountText = ($productCollection->count() == 1) ? "item" : "items";
 ?>
 
-<div class="flex-container cc-search-result">
-    <?php
-    if (empty($attributeColl) && empty($priceFrom) && empty($priceTo)) {
-    ?>
-        <div>
-            <li class="error-msg">
-                <span>
-                    &#x274C; <?php /* @noEscape */ echo "Please specify at least one search term." ?>
-                </span>
-            </li>
-            <div class="advanced-search-summary-para">
+<div class="cc-search-result">
+    <?php if (empty($attributeColl) && empty($priceFrom) && empty($priceTo)) : ?>
+        <div class="empty-result">
+            <div class="error-msg">
+                <span class="icon cross">&#x274C;</span>
+                <span class="message"><?php /* @noEscape */ echo __("Please specify at least one search term."); ?></span>
+            </div>
+            <div class="summary-para">
                 <p>
-                    You need to ? <a id="more-search" class="custom-search-amount">Modify your search</a>
+                    <span><?= /* @noEscape */ __('You need to ?') ?></span>
+                    <a class="modify-search"><?= /* @noEscape */ __('Modify your search') ?></a>
                 </p>
             </div>
         </div>
-    <?php } else { ?>
+    <?php else: ?>
         <div class="advanced-search-summary-container">
-            <?php if (count($productCollection) == 0) { ?>
-                <p class="custom-search-amount">
+            <div class="product-count">
+                <?php if ($productCollection->count() == 0): ?>
                     <span><?php /* @noEscape */ echo "No items were found using the following search criteria" ?></span>
-                <?php
-            } else {
-                $itemCount = ($productCollection->count() == 1) ? "item" : "items";
-                ?>
-                    <strong> <?php /* @noEscape */ echo __('(%1) %2 ', $productCollection->count(), $itemCount)  ?></strong><span><?php /* @noEscape */ echo __('were found using the following search criteria') ?></span>
-                </p>
-            <?php } ?>
+                <?php else : ?>
+                    <strong> <?php /* @noEscape */ echo __('(%1) %2 ', $productCollection->count(), $itemCountText); ?></strong><span><?php /* @noEscape */ echo __('were found using the following search criteria') ?></span>
+                <?php endif; ?>
+            </div>
+
             <div class="advanced-search-summary">
                 <ul class="items attributes-summary">
                     <?php foreach ($attributeColl as $attrCode => $attrOptions) { ?>
@@ -57,100 +56,86 @@ if (!empty($priceFrom) && !empty($priceTo)) {
                         </li>
                     <?php } ?>
                 </ul>
-                <ul class='items price-summary'> 
-                    <?php if ($priceSummary !== null) : ?>
+
+                <?php if ($priceSummary !== null) : ?>
+                    <ul class='items price-summary'> 
                         <li class='item'>
                             <strong><?= /* @noEscape */ __('Price : ') ?></strong>
                             <span><?php echo $priceSummary; ?></span>
                         </li>
-                    <?php endif; ?>
-                </ul>
+                    </ul>
+                <?php endif; ?>
+
                 <p>
-                    <span><?php /* @noEscape */ echo __("Don't see what you're looking for?") ?> </span><a id="more-search" class="custom-search-amount"><?php /* @noEscape */ echo __('Modify your search') ?></a>
+                    <span><?php /* @noEscape */ echo __("Don't see what you're looking for?") ?> </span>
+                    <a class="modify-search"><?php /* @noEscape */ echo __('Modify your search') ?></a>
                 </p>
             </div>
         </div>
-    <?php } ?>
-    <div class="cc-search cc-search-result-product">
-        <div class="products list items product-items">
-            <?php foreach ($productCollection as $product) : ?>
-                <div class="item product product-item">
-                    <div class="product-item-info">
-                        <?php $imgUrl = $this->getItemImage($product->getId()); ?>
-                        <?php // Product Image 
-                        ?>
-                        <div class="image-box image-product">
-                            <a href="<?=  /* @escapeNotVerified */ $product->getProductUrl() ?>">
-                                <img src="<?= $imgUrl; ?>" alt="product-image" />
-                            </a>
-                        </div>
-                        <div class="product details product-item-details">
-                            <strong class="product name product-item-name">
-                                <a class="product-item-link" href="<?php /* @escapeNotVerified */ echo $product->getProductUrl() ?>">
-                                    <?php /* @escapeNotVerified */ echo $product->getName() ?>
-                                </a>
-                            </strong>
-                            <?php echo $block->getProductPrice($product) ?>
-                        </div>
 
-                        <div class="product actions product-item-actions">
-                            <div class="actions-primary">
-                                <?php if ($product->isSaleable()) : ?>
-                                    <?php $postParams = $block->getAddToCartPostParams($product); ?>
-                                    <form data-role="tocart-form" data-product-sku="<?= $block->escapeHtmlAttr($product->getSku()) ?>" action="<?= $block->escapeUrl($postParams['action']) ?>" method="post">
-                                        <input type="hidden" name="product" value="<?= /* @noEscape */ $postParams['data']['product'] ?>">
-                                        <input type="hidden" name="return_url" value="<?= /* @noEscape */ $block->getUrl('productfinder') ?>">
-                                        <input type="hidden" name="<?= /* @noEscape */ Action::PARAM_NAME_URL_ENCODED ?>" value="<?= /* @noEscape */ $postParams['data'][Action::PARAM_NAME_URL_ENCODED] ?>">
-                                        <?= $block->getBlockHtml('formkey') ?>
-                                        <button type="submit" title="<?= $block->escapeHtmlAttr(__('Add to Cart')) ?>" class="action tocart primary">
-                                            <span><?= $block->escapeHtml(__('Add to Cart')) ?></span>
-                                        </button>
-                                    </form>
-                                <?php else : ?>
-                                    <?php if ($product->isAvailable()) : ?>
-                                        <div class="stock available"><span><?= /* @escapeNotVerified */ __('In stock') ?></span></div>
-                                    <?php else : ?>
-                                        <div class="stock unavailable"><span><?= /* @escapeNotVerified */ __('Out of stock') ?></span></div>
-                                    <?php endif; ?>
-                                <?php endif; ?>
+        <?php if ($productCollection->count() > 0): ?>
+            <div class="cc-search-result-product">
+                <div class="products list items product-items">
+                    <?php foreach ($productCollection as $product) : ?>
+                        <div class="item product product-item">
+                            <div class="product-item-info">
+                                <?php $imgUrl = $this->getItemImage($product->getId()); ?>
+                                <?php // Product Image 
+                                ?>
+                                <div class="image-box image-product">
+                                    <a href="<?=  /* @escapeNotVerified */ $product->getProductUrl() ?>">
+                                        <img src="<?= $imgUrl; ?>" alt="product-image" />
+                                    </a>
+                                </div>
+                                <div class="product details product-item-details">
+                                    <strong class="product name product-item-name">
+                                        <a class="product-item-link" href="<?php /* @escapeNotVerified */ echo $product->getProductUrl() ?>">
+                                            <?php /* @escapeNotVerified */ echo $product->getName() ?>
+                                        </a>
+                                    </strong>
+                                    <?php echo $block->getProductPrice($product) ?>
+                                </div>
+
+                                <div class="product actions product-item-actions">
+                                    <div class="actions-primary">
+                                        <?php if ($product->isSaleable()) : ?>
+                                            <?php $postParams = $block->getAddToCartPostParams($product); ?>
+                                            <form data-role="tocart-form" data-product-sku="<?= $block->escapeHtmlAttr($product->getSku()) ?>" action="<?= $block->escapeUrl($postParams['action']) ?>" method="post">
+                                                <input type="hidden" name="product" value="<?= /* @noEscape */ $postParams['data']['product'] ?>">
+                                                <input type="hidden" name="return_url" value="<?= /* @noEscape */ $redirectUrl ?>">
+                                                <input type="hidden" name="<?= /* @noEscape */ Action::PARAM_NAME_URL_ENCODED ?>" value="<?= /* @noEscape */ $postParams['data'][Action::PARAM_NAME_URL_ENCODED] ?>">
+                                                <?= $block->getBlockHtml('formkey') ?>
+                                                <button type="submit" title="<?= $block->escapeHtmlAttr(__('Add to Cart')) ?>" class="action tocart primary">
+                                                    <span><?= $block->escapeHtml(__('Add to Cart')) ?></span>
+                                                </button>
+                                            </form>
+                                        <?php else : ?>
+                                            <?php if ($product->isAvailable()) : ?>
+                                                <div class="stock available"><span><?= /* @escapeNotVerified */ __('In stock') ?></span></div>
+                                            <?php else : ?>
+                                                <div class="stock unavailable"><span><?= /* @escapeNotVerified */ __('Out of stock') ?></span></div>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
-            <?php
-            endforeach;
-            ?>
-        </div>
-    </div>
-    <button id="load-more-products"><?= /* @escapeNotVerified */ __('Load More') ?></button>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
 </div>
 
 <script>
     require(['jquery'], function($) {
         $(document).ready(function() {
-            $('#more-search').click(function() {
-                $(".ccsearch-container .result").hide();
-                $(".ccsearch-form > form").show();
-            });
-            $(".showAttribute:empty").parent().hide();
-
-            // load more products
-            $('#load-more-products').click(function() {
-                var form_data = $('.ccsearch-form > form').serialize() + '&last_product_id=' + 'hello';
-                console.log(form_data);
-                return false;
-                var url = "<?php echo $block->getUrl('productfinder/search/result') ?>";
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: $('.ccsearch-form > form').serialize(),
-                    showLoader: true,
-                    cache: false,
-                    success: function(response) {
-                        $(".ccsearch-container .result").show();
-                        $(".ccsearch-container .result").html(response.output);
-                    }
-                });
+            $('.modify-search').click(function() {
+                var ccsearchContainer   = $(this).parents('.ccsearch-container');
+                var ccsearchForm      = ccsearchContainer.find('.ccsearch-form');
+                var ccsearchResult      = ccsearchContainer.find('> .result');
+                ccsearchResult.hide();
+                ccsearchForm.show();
             });
         });
     });

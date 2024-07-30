@@ -2,7 +2,6 @@
 
 namespace Conceptive\AdvanceSearch\Helper;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Store\Model\ScopeInterface;
 
@@ -20,32 +19,30 @@ class Data extends AbstractHelper
 	const DISPLAY_ATTRIBUTES    = 'conceptive/general/allowattributesinview';
 
 	const TAB_NAME = 'conceptive/';
-	/**
-	 * @var \Magento\Framework\App\Config\ScopeConfigInterface
-	 */
-	protected $scopeConfig;
 
 	/**
 	 * Data constructor
 	 * @param \Magento\Framework\App\Helper\Context $context
-	 * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
 	 */
 	public function __construct(
-		\Magento\Framework\App\Helper\Context $context,
-		ScopeConfigInterface $scopeConfig
+		\Magento\Framework\App\Helper\Context $context
 	) {
-		$this->scopeConfig = $scopeConfig;
 		parent::__construct($context);
 	}
 
-	/**
-	 * @return $isEnabled
-	 */
+	public function getConfigValue($path, $storeId = null)
+	{
+		return $this->scopeConfig->getValue(
+			$path,
+			ScopeInterface::SCOPE_STORE,
+			$storeId
+		);
+	}
+
 	public function isEnabled()
 	{
-		$isEnabled = $this->scopeConfig->getValue(
-			self::IS_ENABLED,
-			ScopeInterface::SCOPE_STORE
+		$isEnabled = $this->getConfigValue(
+			self::IS_ENABLED
 		);
 
 		return $isEnabled;
@@ -53,32 +50,21 @@ class Data extends AbstractHelper
 
 	public function getDisplayAttributes()
 	{
-		$displayAttributes =  $this->scopeConfig->getValue(
+		$displayAttributes =  $this->getConfigValue(
 			self::DISPLAY_ATTRIBUTES,
-			ScopeInterface::SCOPE_STORE
 		);
 		return $displayAttributes;
 	}
 
-	public function getConfigValue($field, $storeId = null)
-	{
-		return $this->scopeConfig->getValue(
-			$field,
-			ScopeInterface::SCOPE_STORE,
-			$storeId
-		);
-	}
-
 	public function getLinkLocation()
     {
-        return $this->scopeConfig->getValue(
-            self::XML_PATH_LINK_LOCATION,
-            ScopeInterface::SCOPE_STORE
+        return $this->getConfigValue(
+            self::XML_PATH_LINK_LOCATION
         );
     }
 
-	public function getGeneralConfig($code, $storeId = null)
+	public function getGeneralConfig($field)
 	{
-		return $this->getConfigValue(self::TAB_NAME . 'general/' . $code, $storeId);
+		return $this->getConfigValue(self::TAB_NAME . 'general/' . $field);
 	}
 }

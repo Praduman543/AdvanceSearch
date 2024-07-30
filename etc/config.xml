@@ -4,6 +4,9 @@
         <conceptive>
             <general>
                 <enable>1</enable>
+                <popup>0</popup>
+                <display_link_location>header</display_link_location>
+                <link_label>Product Search</link_label>
                 <allowattributesinview>color</allowattributesinview>
             </general>
         </conceptive>
