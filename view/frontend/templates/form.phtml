@@ -131,6 +131,15 @@ $attributesColl = explode(',', $attributes);
                     event.preventDefault();
                 });
             }
+
+            // modify search
+            $(document).on('click', '.modify-search', function () {
+                var ccsearchContainer = $(this).parents('.ccsearch-container');
+                var ccsearchForm      = ccsearchContainer.find('.ccsearch-form');
+                var ccsearchResult    = ccsearchContainer.find('> .result');
+                ccsearchResult.hide();
+                ccsearchForm.show();
+            });
         });
     });
 </script>

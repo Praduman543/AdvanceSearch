@@ -7,7 +7,6 @@ use Magento\Store\Model\ScopeInterface;
 
 class Data extends AbstractHelper
 {
-
 	/**
 	 * Admin configuration paths
 	 *
@@ -30,15 +29,6 @@ class Data extends AbstractHelper
 		parent::__construct($context);
 	}
 
-	public function getConfigValue($path, $storeId = null)
-	{
-		return $this->scopeConfig->getValue(
-			$path,
-			ScopeInterface::SCOPE_STORE,
-			$storeId
-		);
-	}
-
 	public function isEnabled()
 	{
 		$isEnabled = $this->getConfigValue(
@@ -46,6 +36,16 @@ class Data extends AbstractHelper
 		);
 
 		return $isEnabled;
+	}
+
+
+	public function getConfigValue($path, $storeId = null)
+	{
+		return $this->scopeConfig->getValue(
+			$path,
+			ScopeInterface::SCOPE_STORE,
+			$storeId
+		);
 	}
 
 	public function getDisplayAttributes()

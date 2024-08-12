@@ -126,17 +126,3 @@ $itemCountText = ($productCollection->count() == 1) ? "item" : "items";
         <?php endif; ?>
     <?php endif; ?>
 </div>
-
-<script>
-    require(['jquery'], function($) {
-        $(document).ready(function() {
-            $('.modify-search').click(function() {
-                var ccsearchContainer   = $(this).parents('.ccsearch-container');
-                var ccsearchForm      = ccsearchContainer.find('.ccsearch-form');
-                var ccsearchResult      = ccsearchContainer.find('> .result');
-                ccsearchResult.hide();
-                ccsearchForm.show();
-            });
-        });
-    });
-</script>
